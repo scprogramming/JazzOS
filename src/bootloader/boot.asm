@@ -90,20 +90,16 @@ disk_read:
     push dx
     push di
 
-    push cx
     call lba_to_chs
-    pop ax
     
     mov ah, 02h
     mov di, 3 ;retry count
 
 .retry:
-    pusha
     stc                 ;some bios don't set carry
     int 13h
     jnc .done
-    
-    popa 
+
     call disk_reset
 
     dec di
@@ -114,8 +110,6 @@ disk_read:
     jmp floppy_error
 
 .done:
-    popa
-
     pop di
     pop dx
     pop cx
