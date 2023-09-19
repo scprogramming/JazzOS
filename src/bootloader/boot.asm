@@ -37,17 +37,23 @@ main:
     MOV si,os_boot_msg
     CALL print
 
+    ;4 segments
+    ;reserved segment: 1 sector
+    ;FAT: 9 * 2 = 18 sectors
+    ;Root directory: 
+    ;Data
+
     MOV ax, [bdb_sectors_per_fat]
     MOV bl, [bdb_fat_count]
     XOR bh,bh
     MUL bx
-    ADD ax, [bdb_reserved_sectors]
+    ADD ax, [bdb_reserved_sectors] ;LBA of the root directory
     PUSH ax
 
-    MOV ax,[bdb_dir_entries_count]
-    SHL ax,5
+    MOV ax, [bdb_dir_entries_count]
+    SHL ax,5 ;ax *= 32
     XOR dx,dx
-    DIV word [bdb_bytes_per_sector]
+    DIV word [bdb_bytes_per_sector] ;(32*num of entries)/bytes per sector
 
     TEST dx,dx
     JZ rootDirAfter
@@ -57,15 +63,15 @@ rootDirAfter:
     MOV cl,al
     POP ax
     MOV dl, [ebr_drive_number]
-    MOV bx,buffer
+    MOV bx, buffer
     CALL disk_read
 
-    XOR bx, bx
-    MOV di, buffer
+    XOR bx,bx
+    MOV di,buffer
 
 searchKernel:
     MOV si, file_kernel_bin
-    MOV cx, 11
+    MOV cx,11
     PUSH di
     REPE CMPSB
     POP di
@@ -86,24 +92,23 @@ kernelNotFound:
     JMP halt
 
 foundKernel:
-
     MOV ax, [di+26]
     MOV [kernel_cluster], ax
 
     MOV ax, [bdb_reserved_sectors]
-    MOV ax, buffer
+    MOV bx, buffer 
     MOV cl, [bdb_sectors_per_fat]
     MOV dl, [ebr_drive_number]
 
     CALL disk_read
 
     MOV bx, kernel_load_segment
-    MOV es, bx
+    MOV es,bx
     MOV bx, kernel_load_offset
 
 loadKernelLoop:
     MOV ax, [kernel_cluster]
-    ADD ax, 31                  ;This is hardcoded and bad!
+    ADD ax, 31
     MOV cl, 1
     MOV dl, [ebr_drive_number]
 
@@ -111,7 +116,7 @@ loadKernelLoop:
 
     ADD bx, [bdb_bytes_per_sector]
 
-    MOV ax, [kernel_cluster]
+    MOV ax, [kernel_cluster] ;(kernel cluster * 3)/2
     MOV cx, 3
     MUL cx
     MOV cx, 2
@@ -125,29 +130,19 @@ loadKernelLoop:
     JZ even
 
 odd:
-    shr ax, 4
+    SHR ax,4
     JMP nextClusterAfter
 even:
-    AND ax,0x0FFF
+    AND ax, 0x0FFF
 
 nextClusterAfter:
-
-    PUSH ax ;ax never changes? Must read the wrong data? Check disk headers
-    MOV ax,si
-    CALL print
-    POP ax
-
-
-    CMP ax,0x0FF8
-
-    JAE readFinish ;Kernel can load, but JAE never triggers
+    CMP ax, 0x0FF8
+    JAE readFinish
 
     MOV [kernel_cluster], ax
     JMP loadKernelLoop
 
 readFinish:
-    MOV si,os_boot_msg
-    CALL print
     MOV dl, [ebr_drive_number]
     MOV ax, kernel_load_segment
     MOV ds,ax
@@ -260,7 +255,7 @@ done_print:
 
 os_boot_msg: DB 'Loading...', 0x0D, 0x0A, 0
 read_failure DB 'Failed to read disk!', 0x0D, 0x0A, 0
-file_kernel_bin DB  'KERNEL  BIN'
+file_kernel_bin DB 'KERNEL  BIN'
 msg_kernel_not_found DB 'KERNEL.BIN not found!'
 kernel_cluster DW 0
 
