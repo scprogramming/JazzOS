@@ -14,7 +14,7 @@ $(BUILD_DIR)/main.img: bootloader kernel
 	mkfs.fat -F 12 -n "JAZZOS" $(BUILD_DIR)/main.img
 	dd if=$(BUILD_DIR)/bootloader.bin of=$(BUILD_DIR)/main.img conv=notrunc
 	mcopy -i $(BUILD_DIR)/main.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
-	mcopy -i $(BUILD_DIR)/main.img test.txt "::test.txt"
+	
 #
 # Bootloader
 #
