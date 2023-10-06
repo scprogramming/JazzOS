@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Sep 24 2023 01:54:50 (32-bit)
 Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       23/10/01 15:41:26
+Created on:       23/10/03 19:05:19
 Executable Image: build/kernel.bin
 creating a RAW Binary Image executable
 
@@ -13,7 +13,7 @@ creating a RAW Binary Image executable
 Group                           Address              Size
 =====                           =======              ====
 
-DGROUP                          00000388             00000058
+DGROUP                          00000398             0000001e
 
 
 
@@ -25,10 +25,10 @@ Segment                Class          Group          Address         Size
 =======                =====          =====          =======         ====
 
 _ENTRY                 CODE           AUTO           00000000        00000010
-_TEXT                  CODE           AUTO           00000010        00000377
-CONST                  DATA           DGROUP         00000388        00000045
-CONST2                 DATA           DGROUP         000003ce        00000011
-_DATA                  DATA           DGROUP         000003e0        00000000
+_TEXT                  CODE           AUTO           00000010        00000387
+CONST                  DATA           DGROUP         00000398        0000000b
+CONST2                 DATA           DGROUP         000003a4        00000011
+_DATA                  DATA           DGROUP         000003b6        00000000
 
 
                         +----------------+
@@ -43,18 +43,20 @@ Address        Symbol
 
 Module: build/kernel/asm/main.obj(src/kernel/main.asm)
 00000000       entry
-Module: build/kernel/asm/print.obj(src/kernel/print.asm)
+Module: build/kernel/asm/print.obj(src/kernel/stdio/print.asm)
 00000010       _x86_div64_32
 0000003e       _x86_Video_WriteCharTeletype
 Module: build/kernel/c/main.obj(/home/scott/Documents/src/os/JazzOS/src/kernel/main.c)
 00000051       _cstart_
-Module: build/kernel/c/stdio.obj(/home/scott/Documents/src/os/JazzOS/src/kernel/stdio.c)
-0000008c+      putc_
-0000009f       puts_
-000000b0+      puts_f_
-000000ce       _printf
-000001f2+      printf_number_
-000003ce+      _possibleChars
+Module: build/kernel/c/stdio.obj(/home/scott/Documents/src/os/JazzOS/src/kernel/stdio/stdio.c)
+00000079+      putc_
+0000008c+      puts_
+0000009d+      puts_f_
+000000bb       _printf
+000001df+      printf_number_
+000003a4+      _possibleChars
+Module: build/kernel/asm/asmDisk.obj(src/kernel/disk/asmDisk.asm)
+00000374       _x86_Disk_Reset
 
 
                         +---------------------+
@@ -69,18 +71,20 @@ Module          Segment               Class           Address         Size
 
 src/kernel/main.asm
                 _ENTRY                CODE           00000000         00000010
-src/kernel/print.asm
+src/kernel/stdio/print.asm
                 _TEXT                 CODE           00000010         00000041
 /home/scott/Documents/src/os/JazzOS/src/kernel/main.c
-                _TEXT                 CODE           00000051         0000003b
-                CONST                 DATA           00000388         00000045
-                CONST2                DATA           000003ce         00000000
-                _DATA                 DATA           000003e0         00000000
-/home/scott/Documents/src/os/JazzOS/src/kernel/stdio.c
-                _TEXT                 CODE           0000008c         000002fb
-                CONST                 DATA           000003ce         00000000
-                CONST2                DATA           000003ce         00000011
-                _DATA                 DATA           000003e0         00000000
+                _TEXT                 CODE           00000051         00000028
+                CONST                 DATA           00000398         0000000b
+                CONST2                DATA           000003a4         00000000
+                _DATA                 DATA           000003b6         00000000
+/home/scott/Documents/src/os/JazzOS/src/kernel/stdio/stdio.c
+                _TEXT                 CODE           00000079         000002fb
+                CONST                 DATA           000003a4         00000000
+                CONST2                DATA           000003a4         00000011
+                _DATA                 DATA           000003b6         00000000
+src/kernel/disk/asmDisk.asm
+                _TEXT                 CODE           00000374         00000023
 Warning! W1014: stack segment not found
 
 
@@ -89,6 +93,6 @@ Warning! W1014: stack segment not found
                         +-----------------------+
 
 Stack size:  0200 (512.)
-Memory size:  03e0 (992.)
+Memory size:  03b6 (950.)
 Entry point address: 00000000
 Link time: 00:00.00
